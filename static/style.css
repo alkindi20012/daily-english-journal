@@ -1,3 +1,5 @@
+.modal[hidden] { display: none !important; }
+
 /* =========================================================================
    Daily English Journal — stylesheet
    Aesthetic: warm paper, editorial serif headings, generous touch targets.
