@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Daily English Journal</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+  <meta name="theme-color" content="#f5efe6" />
+
+  <!-- iOS / iPad PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Journal" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-180.png') }}" />
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon-192.png') }}" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div class="hero-row">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span class="brand-name">Daily English Journal</span>
+        </div>
+        <nav class="tabs">
+          <button class="tab is-active" data-view="today">Today</button>
+          <button class="tab" data-view="archive">Archive</button>
+        </nav>
+      </div>
+      <p class="date" id="date-line">{{ today_date }}</p>
+    </header>
+
+    <!-- ============ TODAY VIEW ============ -->
+    <main class="view" id="view-today">
+      <section class="prompt-card">
+        <div class="prompt-label">Today’s prompt</div>
+        <h1 class="prompt-text" id="prompt-text">{{ today_prompt }}</h1>
+        <div class="prompt-hint">Write naturally. The AI will help you fix it.</div>
+      </section>
+
+      <section class="editor-card">
+        <textarea
+          id="writing"
+          placeholder="Start writing about your day in English…"
+          spellcheck="false"
+          autocapitalize="sentences"
+        ></textarea>
+        <div class="editor-foot">
+          <span class="counter"><span id="char-count">0</span> characters</span>
+          <button class="btn-primary" id="correct-btn">
+            <span class="btn-label">Correct My Writing</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="results" id="results" hidden>
+        <div class="score-card">
+          <div class="score-label">Score</div>
+          <div class="score-value"><span id="score-num">0</span><span class="score-max">/10</span></div>
+        </div>
+
+        <div class="result-block">
+          <div class="result-head">
+            <h2>Corrected text</h2>
+            <button class="copy-btn" id="copy-corrected" title="Copy">Copy</button>
+          </div>
+          <p class="corrected" id="corrected-text"></p>
+        </div>
+
+        <div class="result-block" id="mistakes-block">
+          <div class="result-head">
+            <h2>Mistakes &amp; explanations</h2>
+          </div>
+          <ul class="mistakes" id="mistakes-list"></ul>
+        </div>
+
+        <div class="result-block" id="general-block">
+          <div class="result-head"><h2>Teacher’s note</h2></div>
+          <p class="general-note" id="general-note" dir="rtl" lang="ar"></p>
+        </div>
+      </section>
+
+      <div class="error-banner" id="error-banner" hidden></div>
+    </main>
+
+    <!-- ============ ARCHIVE VIEW ============ -->
+    <main class="view" id="view-archive" hidden>
+      <h2 class="section-title">Your previous writings</h2>
+      <div id="archive-list" class="archive-list">
+        <p class="empty">Loading…</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for viewing a past entry -->
+  <div class="modal" id="entry-modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register("{{ url_for('static', filename='service-worker.js') }}")
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
